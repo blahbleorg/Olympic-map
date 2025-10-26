@@ -166,38 +166,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Data for each location using reliable placeholder images
-            // These placeholders show that the functionality is working, as real images are blocked.
+            // Data for each location
+            // These paths now point to public images on the web (Wikimedia Commons)
             const siteData = {
                 templeOfZeus: {
                     title: "Temple of Zeus",
                     description: "The massive Temple of Zeus was the centerpiece of the sanctuary, built in the 5th century BC. It housed one of the Seven Wonders of the Ancient World: the colossal 43-foot-tall gold and ivory statue of Zeus, created by the sculptor Pheidias.",
-                    ruinsImg: "https://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+Temple+of+Zeus",
-                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+Temple+of+Zeus"
+                    ruinsImg: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Olympia_Tempel_des_Zeus_2013_1.jpg",
+                    recreationImg: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Statue_of_Zeus_at_Olympia_reconstruction.png"
                 },
                 templeOfHera: {
                     title: "Temple of Hera (Heraion)",
                     description: "One of the oldest monumental temples in Greece (c. 600 BC), the Heraion was dedicated to the goddess Hera. Today, its altar is where the Olympic flame for the modern games is lit using a parabolic mirror reflecting the sun's rays.",
-                    ruinsImg: "https://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+Temple+of+Hera",
-                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+Temple+of+Hera"
+                    ruinsImg: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Olympia_Hera_Temple_01.jpg",
+                    recreationImg: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Temple_of_Hera_at_Olympia_reconstruction.png"
                 },
                 stadium: {
                     title: "The Stadium",
                     description: "This was the original Olympic running track where athletes competed in footraces. Spectators (up to 45,000) sat on the grassy embankments. Athletes entered through the Krypte, a stone archway, which you can still walk through today.",
-                    ruinsImg: "httpsS://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+the+Stadium",
-                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+the+Stadium"
+                    ruinsImg: "https://upload.wikimedia.org/wikipedia/commons/7/74/Stadion_von_Olympia.jpg",
+                    recreationImg: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Olympia_Stadion_Rekonstruktion.jpg"
                 },
                 palaestra: {
                     title: "The Palaestra",
                     description: "A square, colonnaded courtyard where athletes like wrestlers, boxers, and jumpers trained. It was an essential part of the Gymnasium complex, with rooms for anointing with oil, bathing, and socializing.",
-                    ruinsImg: "https://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+the+Palaestra",
-                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+the+Palaestra"
+                    ruinsImg: "https://upload.wikimedia.org/wikipedia/commons/c/c6/Olympia_Palaestra_03.jpg",
+                    recreationImg: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Palaestra_at_Olympia_reconstruction.png"
                 },
                 workshop: {
                     title: "Workshop of Pheidias",
                     description: "This building was the studio of the master sculptor Pheidias. It was built to the exact dimensions of the Temple of Zeus's main hall, allowing Pheidias and his team to construct the giant statue of Zeus in sections before it was assembled in the temple.",
-                    ruinsImg: "https://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+Pheidias's+Workshop",
-                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+Workshop"
+                    ruinsImg: "https://upload.wikimedia.org/wikipedia/commons/8/87/Workshop_of_Phidias_in_Olympia_Greece_01.jpg",
+                    recreationImg: "https://upload.wikimedia.org/wikipedia/commons/c/c6/Pheidias_WORKSHOP_reconstruction.jpg"
                 }
             };
 
@@ -213,7 +213,7 @@
             function setupImage(imgElement, src, altText) {
                 const container = imgElement.parentElement;
                 const fallback = container.querySelector('.fallback-text');
-                
+
                 // Reset state
                 imgElement.style.display = 'block';
                 fallback.textContent = 'Image loading...';
@@ -227,7 +227,7 @@
                 
                 imgElement.onerror = () => {
                     imgElement.style.display = 'none'; // Hide broken image icon
-                    fallback.textContent = 'Image failed to load.';
+                    fallback.textContent = `Image failed to load.`;
                 };
             }
 
