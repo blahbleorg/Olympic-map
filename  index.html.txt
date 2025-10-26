@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour of Ancient Olympia</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Use Inter font */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* Simple dotted border for the map area */
+        .map-diagram {
+            border: 3px dashed #cbd5e1; /* slate-300 */
+            background-color: #f1f5f9; /* slate-100 */
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            /* Responsive height for map */
+            height: 60vh;
+            max-height: 500px;
+            overflow: hidden;
+        }
+        /* Styling for the clickable pins on the map */
+        .pin {
+            position: absolute;
+            cursor: pointer;
+            background-color: #ef4444; /* red-500 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px; /* full rounded */
+            font-weight: 600;
+            font-size: 0.875rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s ease-in-out;
+            border: 2px solid white;
+            /* Responsive text size */
+            font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+            padding: clamp(0.4rem, 2vw, 0.5rem) clamp(0.8rem, 3vw, 1rem);
+        }
+        .pin:hover {
+            transform: scale(1.1);
+            background-color: #dc2626; /* red-600 */
+        }
+        /* Modal background */
+        .modal-bg {
+            transition: opacity 0.3s ease;
+        }
+        /* Modal content */
+        .modal-content {
+            transition: all 0.3s ease;
+            transform: translateY(20px);
+        }
+        .modal-bg.opacity-100 .modal-content {
+            transform: translateY(0);
+        }
+        
+        /* Image container for aspect ratio and fallback */
+        .img-container {
+            position: relative;
+            width: 100%;
+            padding-top: 66.66%; /* 3:2 Aspect Ratio */
+            background-color: #e2e8f0; /* slate-200 */
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .img-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .img-container .fallback-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #64748b; /* slate-500 */
+            text-align: center;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-200 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Virtual Tour of Ancient Olympia</h1>
+            <p class="text-lg text-slate-600 mt-2">Click on a location on the map to learn more.</p>
+        </header>
+
+        <!-- Map Area -->
+        <div class="map-diagram rounded-lg shadow-lg mx-auto">
+            <!-- These are positioned absolutely to create a simplified map layout -->
+            
+            <!-- Palaestra -->
+            <button class="pin" data-site="palaestra" style="top: 10%; left: 10%;">
+                Palaestra
+            </button>
+            
+            <!-- Workshop of Pheidias -->
+            <button class="pin" data-site="workshop" style="top: 60%; left: 15%;">
+                Workshop of Pheidias
+            </button>
+
+            <!-- Temple of Hera -->
+            <button class="pin" data-site="templeOfHera" style="top: 25%; left: 40%;">
+                Temple of Hera
+            </button>
+
+            <!-- Temple of Zeus -->
+            <button class="pin" data-site="templeOfZeus" style="top: 50%; left: 45%;">
+                Temple of Zeus
+            </button>
+
+            <!-- Stadium -->
+            <button class="pin" data-site="stadium" style="top: 45%; right: 10%;">
+                The Stadium
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Pop-up (Hidden by default) -->
+    <div id="modal" class="modal-bg fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        
+        <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-5 border-b border-slate-200">
+                <h2 id="modal-title" class="text-2xl font-bold text-slate-800">Location Title</h2>
+                <button id="close-modal" class="text-slate-500 hover:text-slate-800 text-3xl font-bold">&times;</button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- Description -->
+                <p id="modal-description" class="text-slate-700 mb-6">Location description...</p>
+                
+                <!-- Image Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Ruins Image -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-2">The Ruins Today</h3>
+                        <div class="img-container shadow-md">
+                            <span class="fallback-text">Image loading...</span>
+                            <img id="modal-img-ruins" alt="Ruins of the location" class="w-full h-auto rounded-lg object-cover" onerror="this.style.display='none'; this.previousElementSibling.textContent='Image failed to load.';">
+                        </div>
+                    </div>
+                    
+                    <!-- Recreation Image -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-2">Original Recreation</h3>
+                         <div class="img-container shadow-md">
+                            <span class="fallback-text">Image loading...</span>
+                            <img id="modal-img-recreation" alt="Recreation of the location" class="w-full h-auto rounded-lg object-cover" onerror="this.style.display='none'; this.previousElementSibling.textContent='Image failed to load.';">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Data for each location using reliable placeholder images
+            // These placeholders show that the functionality is working, as real images are blocked.
+            const siteData = {
+                templeOfZeus: {
+                    title: "Temple of Zeus",
+                    description: "The massive Temple of Zeus was the centerpiece of the sanctuary, built in the 5th century BC. It housed one of the Seven Wonders of the Ancient World: the colossal 43-foot-tall gold and ivory statue of Zeus, created by the sculptor Pheidias.",
+                    ruinsImg: "https://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+Temple+of+Zeus",
+                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+Temple+of+Zeus"
+                },
+                templeOfHera: {
+                    title: "Temple of Hera (Heraion)",
+                    description: "One of the oldest monumental temples in Greece (c. 600 BC), the Heraion was dedicated to the goddess Hera. Today, its altar is where the Olympic flame for the modern games is lit using a parabolic mirror reflecting the sun's rays.",
+                    ruinsImg: "https://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+Temple+of+Hera",
+                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+Temple+of+Hera"
+                },
+                stadium: {
+                    title: "The Stadium",
+                    description: "This was the original Olympic running track where athletes competed in footraces. Spectators (up to 45,000) sat on the grassy embankments. Athletes entered through the Krypte, a stone archway, which you can still walk through today.",
+                    ruinsImg: "httpsS://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+the+Stadium",
+                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+the+Stadium"
+                },
+                palaestra: {
+                    title: "The Palaestra",
+                    description: "A square, colonnaded courtyard where athletes like wrestlers, boxers, and jumpers trained. It was an essential part of the Gymnasium complex, with rooms for anointing with oil, bathing, and socializing.",
+                    ruinsImg: "https://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+the+Palaestra",
+                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+the+Palaestra"
+                },
+                workshop: {
+                    title: "Workshop of Pheidias",
+                    description: "This building was the studio of the master sculptor Pheidias. It was built to the exact dimensions of the Temple of Zeus's main hall, allowing Pheidias and his team to construct the giant statue of Zeus in sections before it was assembled in the temple.",
+                    ruinsImg: "https://placehold.co/600x400/94a3b8/ffffff?text=Ruins+of+Pheidias's+Workshop",
+                    recreationImg: "https://placehold.co/600x400/a3bf94/ffffff?text=Recreation+of+Workshop"
+                }
+            };
+
+            // Get modal elements
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+            const modalImgRuins = document.getElementById('modal-img-ruins');
+            const modalImgRecreation = document.getElementById('modal-img-recreation');
+            const closeModalBtn = document.getElementById('close-modal');
+
+            // Function to show the loading/error fallback
+            function setupImage(imgElement, src, altText) {
+                const container = imgElement.parentElement;
+                const fallback = container.querySelector('.fallback-text');
+                
+                // Reset state
+                imgElement.style.display = 'block';
+                fallback.textContent = 'Image loading...';
+                
+                imgElement.src = src;
+                imgElement.alt = altText;
+                
+                imgElement.onload = () => {
+                    fallback.textContent = ''; // Clear text on successful load
+                };
+                
+                imgElement.onerror = () => {
+                    imgElement.style.display = 'none'; // Hide broken image icon
+                    fallback.textContent = 'Image failed to load.';
+                };
+            }
+
+            // Function to open the modal
+            function openModal(siteKey) {
+                const data = siteData[siteKey];
+                if (!data) return;
+
+                // Populate modal content
+                modalTitle.textContent = data.title;
+                modalDescription.textContent = data.description;
+                
+                // Setup images with error handling
+                setupImage(modalImgRuins, data.ruinsImg, `Ruins of ${data.title}`);
+                setupImage(modalImgRecreation, data.recreationImg, `Recreation of ${data.title}`);
+
+                // Show the modal
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.add('opacity-100'), 10);
+            }
+
+            // Function to close the modal
+            function closeModal() {
+                modal.classList.remove('opacity-100');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+
+            // Event listener for map pins
+            document.querySelectorAll('.pin').forEach(pin => {
+                pin.addEventListener('click', () => {
+                    const siteKey = pin.getAttribute('data-site');
+                    openModal(siteKey);
+                });
+            });
+
+            // Event listener for close button
+            closeModalBtn.addEventListener('click', closeModal);
+
+            // Event listener to close modal on background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
